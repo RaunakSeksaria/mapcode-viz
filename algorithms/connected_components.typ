@@ -3,6 +3,8 @@
 
 #set math.equation(numbering: none)
 
+== Description of the problem and example input outputs
+
 Compute the number of connected components in an undirected graph $G = (V, E)$ where $|V| = n$ and $|E| = m$.
 
 A connected component is a maximal set of vertices such that there exists a path between any pair of vertices in the set.
@@ -18,12 +20,45 @@ Examples:
 - Graph with vertices ${0, 1, 2}$ and edges ${(0,1), (1,2)}$ has 1 component
 - Graph with $n$ isolated vertices has $n$ components
 
-*As mapcode:*
+== Recursive Solution (without mapcode)
 
-_primitives_:
-- Graph adjacency structure (represented as adjacency list)
-- Array/vector operations (assignment, comparison)
-- Logical operations (checking all vertices visited)
+The standard recursive approach uses depth-first search (DFS):
+
+$
+"countComponents"(G) &= sum_(v in V) "newComponent"(v)\
+"newComponent"(v) &= cases(
+  1 & "if" v "unvisited, then" "DFS"(v) "and return" 1,
+  0 & "if" v "already visited"
+)\
+"DFS"(v) &= cases(
+  "mark" v "visited" & "base case",
+  forall u in "adj"[v]: "DFS"(u) & "recursive calls to neighbors"
+)
+$
+
+This recursion satisfies the non-triviality requirement because:
+- The DFS function makes *multiple recursive calls* (one for each neighbor), creating a branching recursion structure.
+- Each recursive call explores a strictly smaller substructure (the set of unvisited vertices decreases).
+- The algorithm exhibits ≥ 2 branches when a vertex has multiple neighbors, and the overall structure combines multiple DFS traversals.
+- The recursion depth can be up to $n$ (in a path graph), and each DFS may spawn multiple recursive branches.
+
+== Mapcode
+
+=== Primitives
+
+Data type and domain → range:
+- Domain: Graphs $G = (V, E)$ represented as $(n, m, "AdjList")$
+- Range: $NN_0$ (number of connected components)
+
+Primitives used:
+- Graph adjacency structure (adjacency list): $V -> 2^V$
+- Array/vector operations (assignment, comparison): ${0,1}^n$
+- Logical operations (checking all vertices visited): ${0,1}^n -> "Bool"$
+- Min operation (for seed selection): $2^V -> V$
+
+=== Maps and spaces
+
+Mapcode components:
 
 $ 
 I &= NN times NN times "AdjList" \
@@ -38,10 +73,12 @@ where:
 - $"AdjList"$ is the adjacency list representation
 - The last $NN$ stores $n$ (number of vertices)
 
+*Initialization* $rho: I -> X$:
 $
-rho(n, m, "adj") & = ("visited": arrow.r 0^n, "count": 0, "seed": -1, "adj", n)\
+rho(n, m, "adj") & = ("visited": arrow.r 0^n, "count": 0, "seed": -1, "adj", n)
 $
 
+*Update function* $F: X -> X$:
 $
 F(x equiv ("vis", c, s, "adj", n)) & = cases(
   x & "if" s = -1 "and" forall i: "vis"[i] = 1 quad "(" "fixed point" ")",
@@ -65,6 +102,7 @@ $
 
 and $i^* = min{i | "vis"[i] = 0}$ is the first unvisited vertex.
 
+*Output function* $pi: X -> A$:
 $
 pi(x equiv ("vis", c, s, "adj", n)) & = c
 $
@@ -76,6 +114,10 @@ The algorithm operates in two alternating phases:
 1. *Seed selection phase* ($s = -1$): Find the next unvisited vertex to start a DFS from. If all vertices are visited, reach fixed point.
 
 2. *DFS expansion phase* ($s >= 0$): Propagate reachability from the current seed by marking all neighbors of visited vertices. When no new vertices are reached (fixed point of reachability), increment component count and return to seed selection.
+
+=== Trace
+
+The trace visualization below demonstrates convergence to a fixed point through iterative application of $F$. Each iteration either selects a new seed vertex or expands the reachability from the current seed, showing how $x in X$ converges from the initial state $rho(n, m, "adj")$ to a fixed point where all components are counted.
 
 #let inst = (
   n: 6,
@@ -266,3 +308,27 @@ $
     )
   ]
 )
+
+The trace shows at least 5 iterations (in fact, 13 steps for this graph), demonstrating how the algorithm alternates between seed selection and DFS expansion phases. The final result of 3 components matches the known structure of the graph: ${0, 1, 2}$, ${3, 4}$, and ${5}$.
+
+=== Correctness
+
+Intuitively, the algorithm correctly counts connected components by:
+1. *Invariant preservation*: Each DFS expansion from a seed fully explores one connected component by iteratively marking all reachable vertices.
+2. *Completeness*: The seed selection phase ensures every vertex is eventually visited, so no component is missed.
+3. *Counting accuracy*: The component count increments exactly once per completed DFS (when reachability reaches a fixed point), ensuring each component is counted exactly once.
+
+The alternating phase structure ensures that:
+- When $s >= 0$, the visited array expands to include all vertices reachable from the seed
+- When $"vis"'= "vis"$ during DFS, the component is fully explored, so we increment count and reset to seed selection
+- When $s = -1$ and all vertices are visited, we've counted all components and reach the global fixed point
+
+=== Implementation notes
+
+Key design decisions:
+- *State representation*: The state $X$ maintains five components: visited array, count, current seed, adjacency list, and $n$. This captures both the algorithmic progress and the graph structure.
+- *Phase alternation*: The seed value $s$ serves as a mode indicator: $s = -1$ means "find next component," while $s >= 0$ means "expand current component from seed $s$."
+- *Convergence*: The algorithm reaches a fixed point when all vertices are visited ($forall i: "vis"[i] = 1$) and no DFS is active ($s = -1$).
+- *Mapping from recursion*: The recursive DFS branching (calling DFS on each neighbor) is captured by the reachability closure operation, which simultaneously marks all neighbors of all visited vertices. This is a breadth-first parallel expansion rather than depth-first sequential exploration.
+- *Non-triviality through branching*: The recursion exhibits ≥ 2 branches because DFS on a vertex with multiple neighbors spawns multiple recursive calls. The mapcode captures this through the reachability closure that explores all neighbors simultaneously.
+- *Nested fixed points*: The algorithm has two levels of fixed points: (1) inner fixed point when DFS completes (no new vertices reachable), and (2) outer fixed point when all vertices are visited (no more components to find).
