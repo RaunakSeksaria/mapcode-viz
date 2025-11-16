@@ -3,6 +3,8 @@
 
 #set math.equation(numbering: none)
 
+== Description of the problem and example input outputs
+
 Compute the sum of digits of a positive integer $n$. i.e $n in NN, n > 0$
 
 Formal definition:
@@ -11,7 +13,14 @@ $
 $
 where $d$ is the number of digits in $n$.
 
-Equivalently (recursive):
+Examples:
+- $"digitsum"(123) -> 6$ (since $1 + 2 + 3 = 6$)
+- $"digitsum"(5) -> 5$
+- $"digitsum"(8296) -> 25$ (since $8 + 2 + 9 + 6 = 25$)
+
+== Recursive Solution (without mapcode)
+
+Recursive formulation:
 $
 "digitsum"(n) = cases(
   n & "if" n < 10,
@@ -19,20 +28,29 @@ $
 )
 $
 
-Examples:
-- $"digitsum"(123) -> 6$ (since $1 + 2 + 3 = 6$)
-- $"digitsum"(5) -> 5$
-- $"digitsum"(8296) -> 25$ (since $8 + 2 + 9 + 6 = 25$)
+This recursion satisfies the non-triviality requirement because:
+- Each recursive call operates on a strictly smaller substructure: $floor(n / 10)$ has fewer digits than $n$.
+- The function makes a single recursive call on $floor(n / 10)$, combined with a base case when $n < 10$.
+- The recursion depth equals the number of digits $d$ in $n$.
 
-*As mapcode:*
+== Mapcode
+=== Primitives
 
-_primitives_: 
-- `div`($\/$): integer division (quotient)
-- `mod`($mod$): modulo operation (remainder)
-- `add`($+$): addition
-- `numdigits`: returns number of digits in a number
+Data type and domain → range:
+- Domain: $NN$ (positive integers)
+- Range: $NN$ (sum of digits)
+
+Primitives used:
+- `div`($\/$): integer division (quotient), $NN times NN -> NN$
+- `mod`($mod$): modulo operation (remainder), $NN times NN -> NN$
+- `add`($+$): addition, $NN times NN -> NN$
+- `numdigits`: returns number of digits in a number, $NN -> NN$
 
 These operations on $bot$ are undefined (strict).
+
+=== Maps and spaces
+
+Mapcode components:
 
 $ 
 I = NN quad quad quad X_n &= [0..d-1] -> (NN_bot times NN) quad quad quad A = NN
@@ -40,20 +58,33 @@ $
 
 where $d = "numdigits"(n)$
 
+*Initialization* $rho: I -> X_n$:
 $
-rho(n) & = {i -> (bot, n) | i in [0..d-1]}\
+rho(n) & = {i -> (bot, n) | i in [0..d-1]}
+$
+
+*Update function* $F: X_n -> X_n$:
+$
 F(x_n equiv (a_i, r_i))(i) & = cases(
   (a_i, r_i) & "if " a_i != bot,
   (r_i mod 10, floor(r_i / 10)) & "if " a_i = bot "and" i = 0,
-  (a_(i-1) + (r_(i-1) mod 10), floor(r_(i-1) / 10)) & "if " a_i = bot "and" i > 0 "and" a_(i-1) != bot,
+  (a_(i-1) + (r_i mod 10), floor(r_i / 10)) & "if " a_i = bot "and" i > 0 "and" a_(i-1) != bot,
   (a_i, floor(r_i / 10)) & "if " a_i = bot "and" i > 0 "and" a_(i-1) = bot
-)\
-pi(x) & = a_(d-1)
+)
+$
+
+*Output function* $pi: X_n -> A$:
+$
+pi(x equiv (a, r)) & = a
 $
 
 where $x_i = (a_i, r_i)$ represents a pair of (accumulated sum, remaining number).
 
-#let inst = 8296;
+=== Trace
+
+The trace visualization below demonstrates convergence to a fixed point through iterative application of $F$. Each iteration computes one more digit's contribution to the sum, showing how $x in X$ converges from the initial state $rho(n)$ to a fixed point where all accumulator values are computed.
+
+#let inst = 829632;
 #figure(
   caption: [Sum of digits computation using mapcode for $n = #inst$],
 $
@@ -123,8 +154,22 @@ $
     X_h: X_h,
     pi_name: [$pi$],
     group-size: calc.min(7, d),
-    cell-size: 15mm, scale-fig: 85%
+    cell-size: 15mm, scale-fig: 70%
   )(inst)
 }
 $
 )
+
+The trace shows at least 5 iterations (for $n = 829632$, we have $d = 6$ digits, requiring 6 iterations to reach the fixed point). The final result $a_5 = 30$ matches the known mathematical result: $8 + 2 + 9 + 6 + 3 + 2 = 30$.
+
+=== Correctness
+Intuitively, at each iteration, the map $F$ computes the contribution of one more digit to the accumulated sum in the appropriate position. After $d$ iterations, all digits have been processed, and the accumulator at position $d-1$ contains the total sum of digits.
+
+=== Implementation notes
+
+Key design decisions:
+- *State representation*: Each position $i in [0..d-1]$ maintains a pair $(a_i, r_i)$ where $a_i$ accumulates the partial sum and $r_i$ tracks the remaining number to process.
+- *Dependency structure*: Position $i$ depends on position $i-1$, creating a sequential dependency chain that naturally mirrors the recursive structure.
+- *Convergence*: The algorithm reaches a fixed point in exactly $d$ iterations, where $d$ is the number of digits in $n$.
+- *Mapping from recursion*: The recursive call $"digitsum"(floor(n / 10))$ is captured by the dependency on $a_(i-1)$, while the base case $(n mod 10)$ is computed at each position.
+- What is important is that *$i/(10^i)$ is not explicitly represented*; instead, the map F implicitly handles the positional value through these operations.
