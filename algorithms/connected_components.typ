@@ -62,7 +62,7 @@ Mapcode components:
 
 $ 
 I &= NN times NN times "AdjList" \
-X &= {0,1}^n times NN_0 times (ZZ union {-1}) times "AdjList" times NN\
+X &= {0,1}^n times NN_0 times ((ZZ inter [0:n-1]) union {-1}) times "AdjList" times NN\
 A &= NN_0
 $
 

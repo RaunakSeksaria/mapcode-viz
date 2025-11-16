@@ -84,6 +84,8 @@ where $x_i = (a_i, r_i)$ represents a pair of (accumulated sum, remaining number
 
 The trace visualization below demonstrates convergence to a fixed point through iterative application of $F$. Each iteration computes one more digit's contribution to the sum, showing how $x in X$ converges from the initial state $rho(n)$ to a fixed point where all accumulator values are computed.
 
+F direction below is reversed but that is a Typst error.
+
 #let inst = 829632;
 #figure(
   caption: [Sum of digits computation using mapcode for $n = #inst$],
