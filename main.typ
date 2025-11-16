@@ -3,9 +3,7 @@
 #show: arkheion.with(
   title: "Mapcode : Recursion Modeling",
   authors: (
-    (name: "Nitheesh Chandra", email: "nitheeshchandra.y@research.iiit.ac.in", affiliation: "TA, PoPL"),
-
-    (name: "Contributors from PoPL 2025, IIITH", email: "", affiliation: "Students, PoPL"),
+    (name: "Raunak Seksaria (2023113019)", email: "raunak.seksaria@research.iiit.ac.in", affiliation: "IIIT Hyderabad"),
   ),
   abstract: [
     Recursion modeling in the `mapcode` framework.
@@ -43,12 +41,10 @@ All primitives are _strict_ meaning they do not allow for undefined values (i.e.
 
 = Examples
 
-#include "algorithms/factorial.typ"
+#include "algorithms/sum_of_digits.typ"
 #pagebreak()
-#include "algorithms/fibonacci.typ"
+#include "algorithms/prefix_sum.typ"
 #pagebreak()
-#include "algorithms/BinomialCoefficients.typ"
+#include "algorithms/mutual_recursion.typ"
 #pagebreak()
-#include "algorithms/LongestCommonSubsequence.typ"
-#pagebreak()
-#include "algorithms/leetcode/P2_add-two-numbers.typ"
+#include "algorithms/connected_components.typ"
