@@ -152,7 +152,7 @@ $
   mapcode-viz(
     rho, F, pi(d - 1),
     X_h: X_h,
-    pi_name: [$pi$],
+    pi_name: [$mpi$],
     group-size: calc.min(7, d),
     cell-size: 15mm, scale-fig: 70%
   )(inst)

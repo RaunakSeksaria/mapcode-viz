@@ -242,7 +242,7 @@ $
     X_h: X_h,
     rho_name: [$rho$],
     F_name: [$F$],
-    pi_name: [$pi$],
+    pi_name: [$mpi$],
     f_name: [$f$],
     group-size: 4,
     cell-size: 20mm,

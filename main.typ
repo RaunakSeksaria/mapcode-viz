@@ -1,14 +1,13 @@
 #import "@preview/arkheion:0.1.1": arkheion, arkheion-appendices
 
 #show: arkheion.with(
-  title: "Mapcode : Recursion Modeling",
+  title: "POPL-A5 Report: Recursion Modeling using Mapcode",
   authors: (
     (name: "Raunak Seksaria (2023113019)", email: "raunak.seksaria@research.iiit.ac.in", affiliation: "IIIT Hyderabad"),
   ),
   abstract: [
     Recursion modeling in the `mapcode` framework for A5 of course Principles of Programming Languages (POPL) 2025 at IIIT Hyderabad.
   ],
-  keywords: ("Mapcode", "Recursion", "Programming"),
   date: datetime.today().display()
 )
 
