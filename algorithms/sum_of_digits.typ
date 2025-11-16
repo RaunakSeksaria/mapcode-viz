@@ -1,7 +1,6 @@
 #import "../lib/style.typ": *
 #import "../lib/mapcode.typ": *
 
-== Sum of Digits
 #set math.equation(numbering: none)
 
 Compute the sum of digits of a positive integer $n$. i.e $n in NN, n > 0$

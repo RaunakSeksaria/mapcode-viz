@@ -1,7 +1,6 @@
 #import "../lib/style.typ": *
 #import "../lib/mapcode.typ": *
 
-== Connected Components
 #set math.equation(numbering: none)
 
 Compute the number of connected components in an undirected graph $G = (V, E)$ where $|V| = n$ and $|E| = m$.

@@ -1,7 +1,6 @@
 #import "../lib/style.typ": *
 #import "../lib/mapcode.typ": *
 
-== Mutual Recursion
 #set math.equation(numbering: none)
 
 Compute two mutually recursive sequences $A_n$ and $B_n$ for a non-negative integer $n in NN_0$.

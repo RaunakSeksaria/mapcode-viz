@@ -1,7 +1,6 @@
 #import "../lib/style.typ": *
 #import "../lib/mapcode.typ": *
 
-== Prefix Sum
 #set math.equation(numbering: none)
 
 Compute the prefix sum of an array of integers. Given an array $A = [a_0, a_1, ..., a_(n-1)]$, compute the prefix sum array where each element is the sum of all elements up to that position.

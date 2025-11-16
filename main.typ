@@ -6,7 +6,7 @@
     (name: "Raunak Seksaria (2023113019)", email: "raunak.seksaria@research.iiit.ac.in", affiliation: "IIIT Hyderabad"),
   ),
   abstract: [
-    Recursion modeling in the `mapcode` framework.
+    Recursion modeling in the `mapcode` framework for A5 of course Principles of Programming Languages (POPL) 2025 at IIIT Hyderabad.
   ],
   keywords: ("Mapcode", "Recursion", "Programming"),
   date: datetime.today().display()
@@ -16,6 +16,12 @@
 #import "lib/style.typ": *
 
 #set math.equation(numbering:none)
+
+= Algorithms Chosen
+1. Sum of Digits of a positive number
+2. Prefix Sum of an integer array
+3. Mutual Recursion (Custom two sequence-coupled equations)
+4. Connected Components in an undirected graph
 
 = Notations and Conventions
 
@@ -39,12 +45,15 @@ All primitives are _strict_ meaning they do not allow for undefined values (i.e.
 
 #pagebreak()
 
-= Examples
+= Algorithm 1: Sum of Digits of a positive number
 
 #include "algorithms/sum_of_digits.typ"
 #pagebreak()
+= Algorithm 2: Prefix Sum of an integer array
 #include "algorithms/prefix_sum.typ"
 #pagebreak()
+= Algorithm 3: Mutual Recursion (Custom two sequence-coupled equations)
 #include "algorithms/mutual_recursion.typ"
 #pagebreak()
+= Algorithm 4: Connected Components in an undirected graph
 #include "algorithms/connected_components.typ"
